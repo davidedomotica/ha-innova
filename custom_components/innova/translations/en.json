@@ -1,0 +1,55 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Innova",
+        "description": "Enter the credentials used by the Innova app.",
+        "data": { "email": "Email", "password": "Password" }
+      },
+      "reauth_confirm": {
+        "title": "Innova re-authentication",
+        "description": "Enter the password again for {email}.",
+        "data": { "password": "Password" }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid credentials.",
+      "cannot_connect": "Cannot connect to the Innova cloud.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This Innova account is already configured.",
+      "reauth_successful": "Re-authentication completed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Innova options",
+        "data": { "scan_interval": "Safety poll interval (seconds)" }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "heatpump_dhw": { "name": "Domestic hot water" },
+      "heatpump_zone1": { "name": "Zone 1" },
+      "heatpump_zone2": { "name": "Zone 2" }
+    },
+    "sensor": {
+      "humidity": { "name": "Humidity" },
+      "operation_mode": { "name": "Operating program" },
+      "outdoor_temperature": { "name": "Outdoor temperature" },
+      "water_pressure": { "name": "Water pressure" }
+    },
+    "binary_sensor": { "alarm": { "name": "Alarm" } },
+    "switch": {
+      "silent": { "name": "Silent mode" },
+      "erv": { "name": "Heat recovery ventilation" }
+    },
+    "select": {
+      "silent_level": { "name": "Silent level" },
+      "load_priority": { "name": "Load priority" }
+    }
+  }
+}
