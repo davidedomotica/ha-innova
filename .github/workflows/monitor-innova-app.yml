@@ -1,0 +1,66 @@
+name: Monitor Innova app
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-google-play:
+    runs-on: ubuntu-latest
+    env:
+      APP_ID: tech.solutiontech.innova
+    steps:
+      - name: Read official Google Play publication date
+        id: app
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://play.google.com/store/apps/details?id=${APP_ID}&hl=en_US&gl=US"
+          html="$(curl --fail --location --retry 3 --silent --show-error "$url")"
+          updated="$(printf '%s' "$html" | sed -n 's/.*Updated on<\/div><div class="xg1aie">\([^<]*\)<.*/\1/p' | head -n 1)"
+          if [ -z "$updated" ]; then
+            echo "Impossibile leggere la data di aggiornamento da Google Play" >&2
+            exit 1
+          fi
+          echo "updated=$updated" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Open compatibility review issue when needed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPDATED: ${{ steps.app.outputs.updated }}
+          APP_URL: ${{ steps.app.outputs.url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="Nuovo aggiornamento app Innova rilevato: ${UPDATED}"
+          existing="$(gh issue list --state all --search "${title} in:title" --json title --jq ".[] | select(.title == \"${title}\") | .title" | head -n 1)"
+          if [ -n "$existing" ]; then
+            echo "Segnalazione già presente: $title"
+            exit 0
+          fi
+          gh label create "app-update" --description "Nuova versione dell'app Innova da analizzare" --color "D93F0B" --force
+          body=$(cat <<EOF
+          La pagina ufficiale Google Play segnala un aggiornamento dell'app Innova pubblicato il **${UPDATED}**.
+
+          Pagina: ${APP_URL}
+          Package Android: \`${APP_ID}\`
+
+          Checklist prima della prossima release HACS:
+
+          - acquisire legalmente la nuova APK;
+          - confrontare endpoint REST, servizi gRPC e messaggi protobuf;
+          - verificare nuove capability, allarmi e sensori M7/fancoil;
+          - aggiornare test e documentazione;
+          - provare il componente su Home Assistant;
+          - pubblicare una release solo dopo la verifica.
+
+          _Segnalazione creata automaticamente dal monitor Innova._
+          EOF
+          )
+          gh issue create --title "$title" --body "$body" --label "app-update"
