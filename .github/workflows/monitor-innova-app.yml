@@ -33,6 +33,7 @@ jobs:
       - name: Open compatibility review issue when needed
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           UPDATED: ${{ steps.app.outputs.updated }}
           APP_URL: ${{ steps.app.outputs.url }}
         shell: bash
