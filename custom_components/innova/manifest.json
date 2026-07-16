@@ -1,0 +1,12 @@
+{
+  "domain": "innova",
+  "name": "Innova",
+  "codeowners": ["@davidedomotica"],
+  "config_flow": true,
+  "documentation": "https://github.com/davidedomotica/ha-innova",
+  "integration_type": "hub",
+  "iot_class": "cloud_push",
+  "issue_tracker": "https://github.com/davidedomotica/ha-innova/issues",
+  "requirements": ["h2>=4.1.0"],
+  "version": "0.3.1"
+}
